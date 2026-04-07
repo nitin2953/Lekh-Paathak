@@ -626,10 +626,10 @@ document.addEventListener('keydown', (e) => {
 // Theme Management
 const THEME_STATES = ['light', 'bluish-dark', 'amoled', 'system'];
 const THEME_COLORS = {
-    'light': '#fdfefe',
+    'light': '#f8fafc',
     'bluish-dark': '#0f172a',
     'amoled': '#000000',
-    'system': '#fdfefe'
+    'system': '#f8fafc'
 };
 
 const btnThemeToggle = document.getElementById('btnThemeToggle');
@@ -638,7 +638,7 @@ const metaThemeColor = document.querySelector('meta[name="theme-color"]');
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     document.querySelectorAll('.theme-icon').forEach(el => el.classList.add('hidden'));
-    
+
     let iconClass = '.theme-' + theme;
     let iconEl = document.querySelector(iconClass);
     if (iconEl) iconEl.classList.remove('hidden');
@@ -656,7 +656,7 @@ if (btnThemeToggle) {
         let currentIdx = THEME_STATES.indexOf(state.settings.theme || 'light');
         let nextIdx = (currentIdx + 1) % THEME_STATES.length;
         let newTheme = THEME_STATES[nextIdx];
-        
+
         state.settings.theme = newTheme;
         applyTheme(newTheme);
         localStorage.setItem('rs_settings', JSON.stringify(state.settings));

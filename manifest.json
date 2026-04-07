@@ -4,8 +4,8 @@
 	"description": "अपने लेख को सुनते हुए लिखे",
 	"start_url": "/",
 	"display": "standalone",
-	"background_color": "#fdfefe",
-	"theme_color": "#fdfefe",
+	"background_color": "#f8fafc",
+	"theme_color": "#f8fafc",
 	"orientation": "any",
 	"icons": [{
 			"src": "/icon-180x180px.jpg",

@@ -15,12 +15,13 @@
 }
 
 :root, :root[data-theme="light"] {
+    color-scheme: light;
     --color-white: #fff;
     --color-black: #000;
 
-    --color-text: #1e293b; /* use this in body for text color */
+    --color-text: #1e293b;
     --color-text-muted: #475569;
-    --color-bg: #fdfefe;
+    --color-bg: #f8fafc;
     --color-surface: #ffffff;
     --color-surface-dim: #f3f5f9;
     --color-primary: #1d4ed8;
@@ -36,6 +37,7 @@
 }
 
 :root[data-theme="bluish-dark"] {
+    color-scheme: dark;
     --color-white: rgb(24, 34, 52);
     --color-black: #fff;
     --color-text: rgb(231, 239, 246);
@@ -56,6 +58,7 @@
 }
 
 :root[data-theme="amoled"] {
+    color-scheme: dark;
     --color-white: #0a0a0a;
     --color-black: #fff;
     --color-text: #e5e7eb;
@@ -77,6 +80,7 @@
 
 @media (prefers-color-scheme: dark) {
     :root[data-theme="system"] {
+        color-scheme: dark;
         --color-white: rgb(24, 34, 52);
         --color-black: #fff;
         --color-text: rgb(231, 239, 246);
