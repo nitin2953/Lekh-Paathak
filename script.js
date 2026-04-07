@@ -146,6 +146,21 @@ function initVoices() {
             } else {
                 dom.voiceSelect.value = 0; // fallback to best offline
             }
+        } else {
+            // First time load logic (Auto-select local Hindi female-preferred voice)
+            const localHindiVoices = voices.filter(v => v.lang.startsWith('hi') && v.localService);
+            if (localHindiVoices.length > 0) {
+                let preferredVoice = localHindiVoices.length >= 2 ? localHindiVoices[localHindiVoices.length - 1] : localHindiVoices[0];
+                let idx = voices.findIndex(v => v.name === preferredVoice.name);
+                dom.voiceSelect.value = idx !== -1 ? idx : 0;
+            } else {
+                dom.voiceSelect.value = 0;
+            }
+            // Hydrate initial selection explicitly
+            if (voices[dom.voiceSelect.value]) {
+                state.settings.voiceToken = voices[dom.voiceSelect.value].name;
+                localStorage.setItem('rs_settings', JSON.stringify(state.settings));
+            }
         }
     };
     cb();
