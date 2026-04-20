@@ -98,6 +98,8 @@ function toHindi(text, isHindi = true) {
 }
 
 // Audio Bell Singleton
+const hindiSegmenter = new Intl.Segmenter("hi", { granularity: "grapheme" });
+
 let audioCtx = null;
 function playBell(times = 1) {
     try {
@@ -206,7 +208,7 @@ function applyCSSVars() {
 
 function updateSettings() {
     state.settings.pacing = parseInt(dom.pacingSlider.value);
-    dom.pacingSliderVal.textContent = state.settings.pacing + '%';
+    dom.pacingSliderVal.textContent = (1 + state.settings.pacing / 100).toFixed(1) + 'x';
 
     state.settings.speech_rate = parseFloat(dom.speechRate.value);
     if (state.operationMode === 'writing') state.settings.speech_rate_writing = state.settings.speech_rate;
@@ -493,9 +495,20 @@ function calculateEstimatedTime() {
     let pacingVal = Math.max(-50, Math.min(100, parseInt(state.settings.pacing) || 50));
     let userMultiplier = 1.0 - (pacingVal / 100) * 0.6;
     let totalMs = 0;
+    let tempLineGraphemes = 0;
 
     for (let i = state.currentIndex; i < state.units.length; i++) {
         let unit = state.units[i];
+
+        let prevUnit = i > 0 ? state.units[i - 1] : null;
+        if (!prevUnit || prevUnit.paraIdx !== unit.paraIdx) {
+            tempLineGraphemes = 0;
+        }
+
+        let currGraphemes = 0;
+        if (!unit.isSymbol) {
+            currGraphemes = Array.from(hindiSegmenter.segment(unit.text)).length;
+        }
 
         let bellTimes = 0;
         let nextUnit = state.units[i + 1];
@@ -506,6 +519,16 @@ function calculateEstimatedTime() {
         if (state.operationMode === 'writing') {
             if (bellTimes === 2) extraDelay = 1500 * userMultiplier;
             else if (bellTimes === 1) extraDelay = 1000 * userMultiplier;
+
+            if (!unit.isSymbol) {
+                if (tempLineGraphemes + currGraphemes >= 40 && bellTimes === 0) {
+                    extraDelay += 1500 * userMultiplier;
+                    tempLineGraphemes = 0;
+                } else {
+                    tempLineGraphemes += currGraphemes;
+                }
+            }
+            if (bellTimes > 0) tempLineGraphemes = 0;
         }
 
         let delay = 0;
@@ -564,6 +587,50 @@ function renderOutput() {
     let currentBlockIdx = 0;
     const fragment = document.createDocumentFragment();
 
+    const renderSpanContent = (textChunk, initBold, initItalic) => {
+        let finalSpanHTML = '';
+        let currentPart = '';
+        let inBold = initBold;
+        let inItalic = initItalic;
+        let lastBold = inBold;
+        let lastItalic = inItalic;
+        let cleanText = '';
+
+        for (let c of textChunk) {
+            if (c === '*') {
+                if (currentPart) {
+                    let partHTML = wrapSymbols(currentPart);
+                    if (lastBold) partHTML = `<b>${partHTML}</b>`;
+                    if (lastItalic) partHTML = `<i>${partHTML}</i>`;
+                    finalSpanHTML += partHTML;
+                    currentPart = '';
+                }
+                inBold = !inBold;
+                lastBold = inBold;
+            } else if (c === '_') {
+                if (currentPart) {
+                    let partHTML = wrapSymbols(currentPart);
+                    if (lastBold) partHTML = `<b>${partHTML}</b>`;
+                    if (lastItalic) partHTML = `<i>${partHTML}</i>`;
+                    finalSpanHTML += partHTML;
+                    currentPart = '';
+                }
+                inItalic = !inItalic;
+                lastItalic = inItalic;
+            } else {
+                currentPart += c;
+                cleanText += c;
+            }
+        }
+        if (currentPart) {
+            let partHTML = wrapSymbols(currentPart);
+            if (lastBold) partHTML = `<b>${partHTML}</b>`;
+            if (lastItalic) partHTML = `<i>${partHTML}</i>`;
+            finalSpanHTML += partHTML;
+        }
+        return { html: finalSpanHTML, cleanText, outBold: inBold, outItalic: inItalic };
+    };
+
     lines.forEach((line, lIdx) => {
         let pText = line.trim();
         if (!pText) {
@@ -590,6 +657,8 @@ function renderOutput() {
             pText = pText.substring(match[0].length);
         }
 
+        pText = pText.replace(/\*\*+/g, '*').replace(/__+/g, '_');
+
         if (!pText) {
             fragment.appendChild(pEl);
             return;
@@ -603,21 +672,13 @@ function renderOutput() {
             sentences.forEach((sent, sIdx) => {
                 if(!sent.trim()) return;
 
-                let touchedBold = inBold;
-                let touchedItalic = inItalic;
-                let cleanText = '';
-                for(let c of sent) {
-                    if (c === '*') { inBold = !inBold; touchedBold = true; }
-                    else if (c === '_') { inItalic = !inItalic; touchedItalic = true; }
-                    else cleanText += c;
-                }
+                const { html, cleanText, outBold, outItalic } = renderSpanContent(sent, inBold, inItalic);
+                inBold = outBold;
+                inItalic = outItalic;
 
                 const span = document.createElement('span');
                 span.className = 'dictation-unit block-unit';
-                if (touchedBold) span.classList.add('md-bold');
-                if (touchedItalic) span.classList.add('md-italic');
-
-                span.innerHTML = wrapSymbols(cleanText);
+                span.innerHTML = html;
                 span.dataset.index = uIndex;
                 pEl.appendChild(span);
 
@@ -636,21 +697,13 @@ function renderOutput() {
                 chunks.forEach(chunk => {
                     if(!chunk.trim()) return;
 
-                    let touchedBold = inBold;
-                    let touchedItalic = inItalic;
-                    let cleanText = '';
-                    for(let c of chunk) {
-                        if (c === '*') { inBold = !inBold; touchedBold = true; }
-                        else if (c === '_') { inItalic = !inItalic; touchedItalic = true; }
-                        else cleanText += c;
-                    }
+                    const { html, cleanText, outBold, outItalic } = renderSpanContent(chunk, inBold, inItalic);
+                    inBold = outBold;
+                    inItalic = outItalic;
 
                     const span = document.createElement('span');
                     span.className = 'dictation-unit';
-                    if (touchedBold) span.classList.add('md-bold');
-                    if (touchedItalic) span.classList.add('md-italic');
-
-                    span.innerHTML = wrapSymbols(cleanText);
+                    span.innerHTML = html;
                     span.dataset.index = uIndex;
 
                     pEl.appendChild(span);
@@ -773,6 +826,18 @@ function speakNext() {
     let pacingVal = Math.max(-50, Math.min(100, parseInt(state.settings.pacing) || 50));
     let userMultiplier = 1.0 - (pacingVal / 100) * 0.6;
 
+    if (state.notebookLineGraphemes === undefined) state.notebookLineGraphemes = 0;
+
+    let prevUnit = state.currentIndex > 0 ? state.units[state.currentIndex - 1] : null;
+    if (!prevUnit || prevUnit.paraIdx !== unit.paraIdx) {
+        state.notebookLineGraphemes = 0;
+    }
+    
+    let currentChunkGraphemes = 0;
+    if (!unit.isSymbol) {
+        currentChunkGraphemes = Array.from(hindiSegmenter.segment(unit.text)).length;
+    }
+
     if (state.operationMode === 'writing' && unit.isSymbol) {
         let bellTimes = 0;
         let nextUnit = state.units[state.currentIndex + 1];
@@ -784,6 +849,10 @@ function speakNext() {
         let extraDelay = 0;
         if (bellTimes === 2) extraDelay = 1500 * userMultiplier;
         else if (bellTimes === 1) extraDelay = 1000 * userMultiplier;
+
+        if (bellTimes > 0) {
+            state.notebookLineGraphemes = 0;
+        }
 
         state.delayTimer = setTimeout(() => {
             if(currentSid !== state.sessionId) return;
@@ -878,6 +947,16 @@ function speakNext() {
             let bufferTime = 1000 + complexBuffer;
 
             delay = (baseTime + bufferTime) * userMultiplier + extraDelay;
+
+            if (state.notebookLineGraphemes + currentChunkGraphemes >= 40 && bellTimes === 0) {
+                console.log(`[Line Break Delay Add] Total line graphemes were ${state.notebookLineGraphemes}, chunk adds ${currentChunkGraphemes} pushing to ${state.notebookLineGraphemes + currentChunkGraphemes}. Adding extra notebook wrap delay of ${1500 * userMultiplier}ms.`);
+                delay += 1500 * userMultiplier;
+                state.notebookLineGraphemes = 0;
+            } else {
+                state.notebookLineGraphemes += currentChunkGraphemes;
+            }
+
+            if (bellTimes > 0) state.notebookLineGraphemes = 0;
         } else {
             delay = (150 * userMultiplier) + extraDelay;
         }
@@ -1042,4 +1121,30 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
     if ((state.settings.theme || 'light') === 'system') {
         applyTheme('system');
     }
+});
+
+// --- Header Scroll Logic for Landscape Mobile ---
+let lastScrollTop = 0;
+const headerEl = document.querySelector('.toolbar');
+const scrollContainers = [dom.editor, dom.panel];
+
+scrollContainers.forEach(container => {
+    container.addEventListener('scroll', () => {
+        const isLandscapeMobile = window.matchMedia('(max-height: 500px) and (orientation: landscape)').matches;
+        const isPortraitMobile = window.matchMedia('(max-width: 768px) and (orientation: portrait)').matches;
+        if (!isLandscapeMobile && !isPortraitMobile) {
+            headerEl.classList.remove('hide-on-scroll');
+            return;
+        }
+
+        let st = container.scrollTop;
+        if (st > lastScrollTop && st > 50) {
+            // Scroll down
+            headerEl.classList.add('hide-on-scroll');
+        } else if (st < lastScrollTop) {
+            // Scroll up
+            headerEl.classList.remove('hide-on-scroll');
+        }
+        lastScrollTop = st <= 0 ? 0 : st; // For Negative scrolling situations on mobile
+    }, { passive: true });
 });

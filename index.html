@@ -68,44 +68,6 @@
 					</div>
 				</div>
 
-				<div class="center-playback disabled" id="centerPlayback">
-					<button id="btnPrevSent" class="btn icon-btn ctrl-btn" title="Previous Sentence (Up)">
-						<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-							<path
-								d="M440-608 324-492q-11 11-28 11t-28-11q-11-11-11-28t11-28l184-184q12-12 28-12t28 12l184 184q11 11 11 28t-11 28q-11 11-28 11t-28-11L520-608v328q0 17-11.5 28.5T480-240q-17 0-28.5-11.5T440-280v-328Z" />
-						</svg>
-					</button>
-					<button id="btnPrevWord" class="btn icon-btn ctrl-btn" title="Previous Unit (Ctrl + Left)">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
-							<path
-								d="m432-480 156 156q11 11 11 28t-11 28-28 11-28-11L348-452q-6-6-8-13t-3-15 3-15 8-13l184-184q11-11 28-11t28 11 11 28-11 28z" />
-						</svg>
-					</button>
-
-					<button id="btnPlayPause" class="btn play-pause-btn" title="Play/Pause (Ctrl + Space)">
-						<svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-							<path fill="currentColor"
-								d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475t-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712" />
-						</svg>
-						<svg class="pause-icon hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-							<path fill="currentColor"
-								d="M16 19q-.825 0-1.412-.587T14 17V7q0-.825.588-1.412T16 5t1.413.588T18 7v10q0 .825-.587 1.413T16 19m-8 0q-.825 0-1.412-.587T6 17V7q0-.825.588-1.412T8 5t1.413.588T10 7v10q0 .825-.587 1.413T8 19" />
-						</svg>
-					</button>
-
-					<button id="btnNextWord" class="btn icon-btn ctrl-btn" title="Next Unit (Ctrl + Right)">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
-							<path
-								d="M504-480 348-636q-11-11-11-28t11-28 28-11 28 11l184 184q6 6 9 13t2 15-2 15-9 13L404-268q-11 11-28 11t-28-11-11-28 11-28z" />
-						</svg>
-					</button>
-					<button id="btnNextSent" class="btn icon-btn ctrl-btn" title="Next Sentence (Down)">
-						<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-							<path
-								d="M440-392v-328q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v328l116-116q11-11 28-11t28 11q11 11 11 28t-11 28L508-268q-12 12-28 12t-28-12L268-452q-11-11-11-28t11-28q11-11 28-11t28 11l116 116Z" />
-						</svg>
-					</button>
-				</div>
 
 				<div class="right-tools">
 					<button id="btnToggleTime" class="btn icon-btn" title="Toggle Estimated Time">
@@ -145,6 +107,45 @@
 					</button>
 				</div>
 			</header>
+
+			<div class="center-playback disabled" id="centerPlayback">
+				<button id="btnPrevSent" class="btn icon-btn ctrl-btn" title="Previous Sentence (Up)">
+					<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+						<path
+							d="M440-608 324-492q-11 11-28 11t-28-11q-11-11-11-28t11-28l184-184q12-12 28-12t28 12l184 184q11 11 11 28t-11 28q-11 11-28 11t-28-11L520-608v328q0 17-11.5 28.5T480-240q-17 0-28.5-11.5T440-280v-328Z" />
+					</svg>
+				</button>
+				<button id="btnPrevWord" class="btn icon-btn ctrl-btn" title="Previous Unit (Ctrl + Left)">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
+						<path
+							d="m432-480 156 156q11 11 11 28t-11 28-28 11-28-11L348-452q-6-6-8-13t-3-15 3-15 8-13l184-184q11-11 28-11t28 11 11 28-11 28z" />
+					</svg>
+				</button>
+
+				<button id="btnPlayPause" class="btn play-pause-btn" title="Play/Pause (Ctrl + Space)">
+					<svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+						<path fill="currentColor"
+							d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475t-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712" />
+					</svg>
+					<svg class="pause-icon hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+						<path fill="currentColor"
+							d="M16 19q-.825 0-1.412-.587T14 17V7q0-.825.588-1.412T16 5t1.413.588T18 7v10q0 .825-.587 1.413T16 19m-8 0q-.825 0-1.412-.587T6 17V7q0-.825.588-1.412T8 5t1.413.588T10 7v10q0 .825-.587 1.413T8 19" />
+					</svg>
+				</button>
+
+				<button id="btnNextWord" class="btn icon-btn ctrl-btn" title="Next Unit (Ctrl + Right)">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 -960 960 960">
+						<path
+							d="M504-480 348-636q-11-11-11-28t11-28 28-11 28 11l184 184q6 6 9 13t2 15-2 15-9 13L404-268q-11 11-28 11t-28-11-11-28 11-28z" />
+					</svg>
+				</button>
+				<button id="btnNextSent" class="btn icon-btn ctrl-btn" title="Next Sentence (Down)">
+					<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+						<path
+							d="M440-392v-328q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v328l116-116q11-11 28-11t28 11q11 11 11 28t-11 28L508-268q-12 12-28 12t-28-12L268-452q-11-11-11-28t11-28q11-11 28-11t28 11l116 116Z" />
+					</svg>
+				</button>
+			</div>
 
 			<div class="canvas-shadow top"></div>
 
@@ -244,11 +245,11 @@
 							<path fill="currentColor"
 								d="M8 20h8v-3q0-1.65-1.175-2.825T12 13t-2.825 1.175T8 17zm6.825-10.175Q16 8.65 16 7V4H8v3q0 1.65 1.175 2.825T12 11t2.825-1.175M5 22q-.425 0-.712-.288T4 21t.288-.712T5 20h1v-3q0-1.525.713-2.863T8.7 12q-1.275-.8-1.987-2.137T6 7V4H5q-.425 0-.712-.288T4 3t.288-.712T5 2h14q.425 0 .713.288T20 3t-.288.713T19 4h-1v3q0 1.525-.712 2.863T15.3 12q1.275.8 1.988 2.138T18 17v3h1q.425 0 .713.288T20 21t-.288.713T19 22z" />
 						</svg>
-						Reading Delay
+						Reading Speed
 					</label>
 					<div class="slider-wrapper">
 						<input type="range" id="pacingSlider" min="-50" max="100" step="10" value="50">
-						<span id="pacingSliderVal" class="slider-value">50%</span>
+						<span id="pacingSliderVal" class="slider-value">1.5x</span>
 					</div>
 				</div>
 
